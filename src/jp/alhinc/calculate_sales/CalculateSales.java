@@ -38,8 +38,6 @@ public class CalculateSales {
 
 		// ※ここから集計処理を作成してください。(処理内容2-1、2-2)
 
-//		てすとこめんと！
-
 
 		// 支店別集計ファイル書き込み処理
 		if(!writeFile(args[0], FILE_NAME_BRANCH_OUT, branchNames, branchSales)) {
@@ -69,6 +67,24 @@ public class CalculateSales {
 			// 一行ずつ読み込む
 			while((line = br.readLine()) != null) {
 				// ※ここの読み込み処理を変更してください。(処理内容1-2)
+				//書き込み
+			    String[] items = line.split(",");
+
+			    //Mapに追加する2つの情報をputの引数として指定します。
+                //支店定義フォルダの支店コード、支店名の文字列分割、保持
+			    branchNames.put("001","札幌支店");
+			    branchNames.put("002","仙台支店");
+			    branchNames.put("003","東京支店");
+			    branchNames.put("004","名古屋支店");
+			    branchNames.put("005","大阪支店");
+
+			    //支店コードと売上金額を保持する
+			    branchSales.put("001",0L);
+			    branchSales.put("002",0L);
+			    branchSales.put("003",0L);
+			    branchSales.put("004",0L);
+			    branchSales.put("005",0L);
+
 				System.out.println(line);
 			}
 
