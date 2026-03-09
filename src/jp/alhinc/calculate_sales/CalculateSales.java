@@ -39,16 +39,16 @@ public class CalculateSales {
 		}
 
 		// ※ここから集計処理を作成してください。(処理内容2-1、2-2)
-		File[] files = new File(args[0]).listFiles(); 
-		
+		File[] files = new File(args[0]).listFiles();
+
 		//先にファイルの情報を格納する List(ArrayList) 宣言します。
-		List<File> rcdFiles = new ArrayList<>(); 
+		List<File> rcdFiles = new ArrayList<>();
 		//ここですべてのファイルから数字8桁のrcdファイルを取り出したい
-		for(int i = 0; i < files.length ; i++) { 
-				if(files[i].getName().matches("^[0-9]{8}.rcd$")) { 
+		for(int i = 0; i < files.length ; i++) {
+				if(files[i].getName().matches("^[0-9]{8}.rcd$")) {
 			            //売上ファイルの条件に当てはまったものだけ、List(ArrayList) に追加します。
-					rcdFiles.add(files[i]); 		
-				} 
+					rcdFiles.add(files[i]);
+				}
 		}
 		//rcdFilesに複数の売上ファイルの情報を格納しているので、その数だけ繰り返します。
 		for(int i = 0; i < rcdFiles.size(); i++) {
@@ -56,16 +56,22 @@ public class CalculateSales {
 			//支店定義ファイル読み込み(readFileメソッド)を参考に売上ファイルの中身を読み込みます。
 			BufferedReader br = null;
 			try {
+
 				FileReader fr = new FileReader(rcdFiles.get(i));
 				br = new BufferedReader(fr);
-			
+
 			//売上ファイルの1行目には支店コード、2行目には売上金額が入っています→.readLineは1行ずつ読み出し、2回で1行目と2行目で出力したい
-				String branchCode = br.readLine(); 
-				String saleLine = br.readLine();
+			//	String branchCode = br.readLine();
+			//	String saleLine = br.readLine();
+				String line;
+				while((line = br.readLine()) != null) {
+					String branchCode = line;
+		            String saleLine = br.readLine();
+
 			//売上ファイルから読み込んだ売上金額をMapに加算していくために、型の変換を行います。
 			//※詳細は後述で説明
-			long fileSale = Long.parseLong(saleLine); 
-			
+			long fileSale = Long.parseLong(saleLine);
+
 			//読み込んだ売上⾦額を加算します。
 			//※詳細は後述で説明
 			//Long saleAmount = 売上金額を入れたMap.get(支店コード) + long に変換した売上金額;
@@ -73,10 +79,12 @@ public class CalculateSales {
 
 			//加算した売上金額をMapに追加します。
 			branchSales.put(branchCode, saleAmount);
-			  } catch (IOException e) {
+				}
+
+			} catch (IOException e) {
 			        // 例外処理（エラーが発生した場合の対応）
 			        System.out.println("UNKNOWN_ERROR");
-			        return; 
+			        return;
 			    } finally {
 			        // ファイルを閉じます。
 			        if (br != null) {
@@ -86,7 +94,7 @@ public class CalculateSales {
 			                System.out.println("UNKNOWN_ERROR");
 			            }
 			        }
-			    }  
+			    }
 		}
 
 		// 支店別集計ファイル書き込み処理
@@ -121,7 +129,7 @@ public class CalculateSales {
 			    String[] items = line.split(",");
 			    //Mapに追加する2つの情報をputの引数として指定します。
                 //支店定義フォルダの支店コード、支店名の文字列分割、保持
-          
+
 			    branchNames.put(items[0], items[1]);
 			    //支店コードと売上金額を保持する
 
@@ -159,7 +167,16 @@ public class CalculateSales {
 	private static boolean writeFile(String path, String fileName, Map<String, String> branchNames, Map<String, Long> branchSales) {
 		// ※ここに書き込み処理を作成してください。(処理内容3-1)
 
-		return true;
-	}
+//		try {
 
-}
+//ここで試行錯誤中
+//			File file = new File(path, fileName);
+//			FileWriter fw = new FileWriter(file);
+//			bw = new BufferedWriter(fw);
+
+//			String line;
+//			while((line = br.readLine()) != null) {
+//		return true;
+//	}
+//
+//}
