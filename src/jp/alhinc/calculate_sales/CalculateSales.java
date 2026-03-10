@@ -70,8 +70,6 @@ public class CalculateSales {
 				List<String> saleContents = new ArrayList<>();
 				String line;
 				while((line = br.readLine()) != null) {
-					//String branchCode = line;
-					//String saleLine = br.readLine();
 					//中身の保持のためString型
 					saleContents.add(line);
 				}
@@ -104,6 +102,7 @@ public class CalculateSales {
 						br.close();
 					} catch (IOException e) {
 						System.out.println(UNKNOWN_ERROR);
+						return;
 					}
 				}
 
