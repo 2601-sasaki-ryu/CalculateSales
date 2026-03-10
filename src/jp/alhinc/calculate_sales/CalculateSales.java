@@ -1,8 +1,10 @@
 package jp.alhinc.calculate_sales;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -154,7 +156,6 @@ public class CalculateSales {
 		}
 		return true;
 	}
-
 	/**
 	 * 支店別集計ファイル書き込み処理
 	 *
@@ -166,17 +167,47 @@ public class CalculateSales {
 	 */
 	private static boolean writeFile(String path, String fileName, Map<String, String> branchNames, Map<String, Long> branchSales) {
 		// ※ここに書き込み処理を作成してください。(処理内容3-1)
+		BufferedWriter bw = null;
 
-//		try {
-
+		try {
 //ここで試行錯誤中
-//			File file = new File(path, fileName);
-//			FileWriter fw = new FileWriter(file);
-//			bw = new BufferedWriter(fw);
+			File file = new File(path, fileName);
+			FileWriter fw = new FileWriter(file);
+			bw = new BufferedWriter(fw);
+			//中身がなくなるまで1つずつ取り出す
+			for (String key : branchNames.keySet()) {
+				//keyという変数には、Mapから取得したキーが代入されています。
+				//拡張for文で繰り返されているので、1つ目のキーが取得できたら、
+				//2つ目の取得...といったように、次々とkeyという変数に上書きされていきます。
 
-//			String line;
-//			while((line = br.readLine()) != null) {
-//		return true;
-//	}
-//
-//}
+				//line = key(支店コード)、支店名、加算した売上金額
+				String line = key + "," + branchNames.get(key) + "," + branchSales.get(key);
+
+	            // .writeでファイルに書き込む、newLine()で改行
+	            bw.write(line);
+	            bw.newLine();
+			}
+
+		} catch (IOException e) {
+		        // 書き込み中にエラーが起きた場合
+		        System.out.println(UNKNOWN_ERROR);
+		        return false;
+	    } finally {
+	    	// ファイルを開いている場合
+		        if (bw != null) {
+		        	// ファイルを閉じる
+		            try {
+		                bw.close();
+		            } catch (IOException e) {
+		                System.out.println(UNKNOWN_ERROR);
+		                return false;
+		            }
+		        }
+		   }
+		    return true;
+
+
+
+	}
+
+}
