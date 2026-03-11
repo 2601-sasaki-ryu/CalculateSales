@@ -63,7 +63,7 @@ public class CalculateSales {
 		//ここですべてのファイルから数字8桁のrcdファイルを取り出したい
 		for(int i = 0; i < files.length; i++) {
 
-			if(!files[i].isFile() &&files[i].getName().matches("^[0-9]{8}.rcd$")) {
+			if(!files[i].isFile() && files[i].getName().matches("^[0-9]{8}.rcd$")) {
 				//売上ファイルの条件に当てはまったものだけ、List(ArrayList) に追加します。
 				rcdFiles.add(files[i]);
 			}
