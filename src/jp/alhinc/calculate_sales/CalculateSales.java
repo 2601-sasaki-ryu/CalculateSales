@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 public class CalculateSales {
 
 	// 支店定義ファイル名
@@ -28,6 +27,7 @@ public class CalculateSales {
 	//追加したエラーメッセージ
 	private static final String FILE_NOT_SEQUENCE = "売上ファイル名が連番になっていません";
 	private static final String AMOUNT_OVER = "合計金額が10桁を超えました";
+	//<該当ファイル名>が固定ではないため、一文で定義できなかった。
 	private static final String CODE_INVALID_NUMBER ="の支店コードが不正です";
 	private static final String INVALID_FORMAT = "のフォーマットが不正です";
 	/**
@@ -122,7 +122,6 @@ public class CalculateSales {
 					System.out.println(rcdFiles.get(i).getName() + INVALID_FORMAT);
 					return;
 				}
-
 
 				//1行ずつListに追加されている(支店コード、金額）
 				//拡張性を考慮した時、後から.get()を増やせば良いと考えた
