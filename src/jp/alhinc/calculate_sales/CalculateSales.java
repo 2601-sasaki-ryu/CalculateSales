@@ -7,9 +7,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 
 public class CalculateSales {
 
@@ -23,13 +25,26 @@ public class CalculateSales {
 	private static final String UNKNOWN_ERROR = "予期せぬエラーが発生しました";
 	private static final String FILE_NOT_EXIST = "支店定義ファイルが存在しません";
 	private static final String FILE_INVALID_FORMAT = "支店定義ファイルのフォーマットが不正です";
-
+	//追加したエラーメッセージ
+	private static final String FILE_NOT_SEQUENCE = "売上ファイル名が連番になっていません";
+	private static final String AMOUNT_OVER = "合計金額が10桁を超えました";
+	private static final String CODE_INVALID_NUMBER ="の支店コードが不正です";
+	private static final String INVALID_FORMAT = "のフォーマットが不正です";
 	/**
 	 * メインメソッド
 	 *
 	 * @param コマンドライン引数
 	 */
 	public static void main(String[] args) {
+
+		//コマンドライン引数の確認、エラー処理
+		if (args.length != 1) {
+			//コマンドライン引数が1つ設定されていなかった場合は、
+			//エラーメッセージをコンソールに表示します。
+			System.out.println(UNKNOWN_ERROR);
+			return;
+		}
+
 		// 支店コードと支店名を保持するMap
 		Map<String, String> branchNames = new HashMap<>();
 		// 支店コードと売上金額を保持するMap
@@ -48,12 +63,39 @@ public class CalculateSales {
 		//ここですべてのファイルから数字8桁のrcdファイルを取り出したい
 		for(int i = 0; i < files.length; i++) {
 
+			//ファイルなのか確認、エラー処理 .getName()ではファイルとディレクトリどちらも抽出するため確認
+			if(!files[i].isFile() && files[i].getName().matches("^[0-9]{8}.rcd$")) {
+				//対象がファイルであり、「数字8桁.rcd」なのか判定します。
+				System.out.println(UNKNOWN_ERROR);
+				return;
+			}
+
 			if(files[i].getName().matches("^[0-9]{8}.rcd$")) {
 				//売上ファイルの条件に当てはまったものだけ、List(ArrayList) に追加します。
 				rcdFiles.add(files[i]);
 			}
 
 		}
+
+		//.rcdファイルが連番になっていない場合終了したい。
+		//比較回数は売上ファイルの数よりも1回少ないため、
+		//繰り返し回数は売上ファイルのリストの数よりも1つ小さい数
+		Collections.sort(rcdFiles);
+		for(int i = 0; i < rcdFiles.size() -1; i++) {
+			//latter - former = 1になれば連番、.get(i)呼び出し順で後者は.get(i) + 1、File型だとエラーになるので.getNameでStringにした
+			int former = Integer.parseInt(rcdFiles.get(i).getName().substring(0, 8));
+			int latter = Integer.parseInt(rcdFiles.get(i + 1).getName().substring(0, 8));
+
+			//比較する2つのファイル名の先頭から数字の8文字を切り出し、int型に変換します。
+			if((latter - former) != 1) {
+				//2つのファイル名の数字を比較して、差が1ではなかったら、
+				//エラーメッセージをコンソールに表示します。
+				System.out.println(FILE_NOT_SEQUENCE);
+				return;
+			}
+
+		}
+
 		//rcdFilesに複数の売上ファイルの情報を格納しているので、その数だけ繰り返します。
 		for(int i = 0; i < rcdFiles.size(); i++) {
 
@@ -73,11 +115,34 @@ public class CalculateSales {
 					//中身の保持のためString型
 					saleContents.add(line);
 				}
+				//売上ファイルが2行になっているか確認、エラー処理
+				if(saleContents.size() != 2) {
+				    //売上ファイルの行数が2行ではなかった場合は、
+				    //エラーメッセージをコンソールに表示します。
+					System.out.println(rcdFiles.get(i).getName() + INVALID_FORMAT);
+					return;
+				}
+
 
 				//1行ずつListに追加されている(支店コード、金額）
 				//拡張性を考慮した時、後から.get()を増やせば良いと考えた
 				String branchCode = saleContents.get(0);
 				String saleLine = saleContents.get(1);
+
+				//支店コードに該当がなかった場合エラー処理したい
+				if (!branchNames.containsKey(branchCode)) {
+					//支店情報を保持しているMapに売上ファイルの支店コードが存在しなかった場合は、
+					//エラーメッセージをコンソールに表示します。
+					System.out.println(rcdFiles.get(i).getName() + CODE_INVALID_NUMBER);
+					return ;
+				}
+
+				if(!saleLine.matches("^[0-9]*$")) {
+					//売上金額が数字ではなかった場合は、
+					//エラーメッセージをコンソールに表示
+					System.out.println(UNKNOWN_ERROR);
+					return;
+				}
 
 				//売上ファイルから読み込んだ売上金額をMapに加算していくために、型の変換を行います。
 				//※詳細は後述で説明
@@ -87,6 +152,12 @@ public class CalculateSales {
 				//※詳細は後述で説明
 				//Long saleAmount = 売上金額を入れたMap.get(支店コード) + long に変換した売上金額;
 				Long saleAmount = branchSales.get(branchCode) + fileSale;
+
+				//10桁超えた場合にエラー処理
+				if(saleAmount >= 10000000000L){
+					System.out.println(AMOUNT_OVER);
+				}
+
 				//加算した売上金額をMapに追加します。
 				branchSales.put(branchCode, saleAmount);
 
@@ -146,17 +217,12 @@ public class CalculateSales {
 			// 一行ずつ読み込む
 			while((line = br.readLine()) != null) {
 
-
-
 				// ※ここの読み込み処理を変更してください。(処理内容1-2)
 				//書き込み
 				String[] items = line.split(",");
-				//Mapに追加する2つの情報をputの引数として指定します。
-				//支店定義フォルダの支店コード、支店名の文字列分割、保持
-
 
 				//支店定義ファイルのフォーマットが不正な場合は、処理を終了したい
-				//$：直前のパターンで終了することを示す
+				//^:直後に始まる$：直前のパターンで終了する
 				if((items.length != 2) || (!items[0].matches("^[0-9]{3}$"))) {
 					//支店定義ファイルの仕様が満たされていない場合、
 					//エラーメッセージをコンソールに表示します。
@@ -164,6 +230,8 @@ public class CalculateSales {
 					return false;
 				}
 
+				//Mapに追加する2つの情報をputの引数として指定します。
+				//支店定義フォルダの支店コード、支店名の文字列分割、保持
 			    branchNames.put(items[0], items[1]);
 			    //支店コードと売上金額を保持する
 
