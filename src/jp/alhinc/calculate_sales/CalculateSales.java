@@ -20,6 +20,9 @@ public class CalculateSales {
 	// 支店別集計ファイル名
 	private static final String FILE_NAME_BRANCH_OUT = "branch.out";
 
+	//商品定義ファイル名
+	private static final String FILE_NAME_COMMODITY_LST = "commodity.lst";
+
 	// エラーメッセージ
 	private static final String UNKNOWN_ERROR = "予期せぬエラーが発生しました";
 	private static final String FILE_NOT_EXIST = "支店定義ファイルが存在しません";
@@ -50,8 +53,16 @@ public class CalculateSales {
 		// 支店コードと売上金額を保持するMap
 		Map<String, Long> branchSales = new HashMap<>();
 
-		// 支店定義ファイル読み込み処理
+		//商品定義コードと名前を保持するMap
+		Map<String, String> commodityCodes = new HashMap<>();
+
+		// 支店定義ファイル読み込み処理 1-3途中
 		if(!readFile(args[0], FILE_NAME_BRANCH_LST, branchNames, branchSales)) {
+			return;
+		}
+
+		//商品定義ファイル読み込み処理 1-3途中
+		if(!readFile(args[0], FILE_NAME_COMMODITY_LST, commodityCodes)) {
 			return;
 		}
 
@@ -63,7 +74,7 @@ public class CalculateSales {
 		//ここですべてのファイルから数字8桁のrcdファイルを取り出したい
 		for(int i = 0; i < files.length; i++) {
 
-			if(!files[i].isFile() && files[i].getName().matches("^[0-9]{8}.rcd$")) {
+			if(files[i].isFile() && files[i].getName().matches("^[0-9]{8}.rcd$")) {
 				//売上ファイルの条件に当てはまったものだけ、List(ArrayList) に追加します。
 				rcdFiles.add(files[i]);
 			}
@@ -249,6 +260,7 @@ public class CalculateSales {
 		}
 		return true;
 	}
+
 	/**
 	 * 支店別集計ファイル書き込み処理
 	 *
