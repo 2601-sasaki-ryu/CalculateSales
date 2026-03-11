@@ -63,14 +63,7 @@ public class CalculateSales {
 		//ここですべてのファイルから数字8桁のrcdファイルを取り出したい
 		for(int i = 0; i < files.length; i++) {
 
-			//ファイルなのか確認、エラー処理 .getName()ではファイルとディレクトリどちらも抽出するため確認
-			if(!files[i].isFile() && files[i].getName().matches("^[0-9]{8}.rcd$")) {
-				//対象がファイルであり、「数字8桁.rcd」なのか判定します。
-				System.out.println(UNKNOWN_ERROR);
-				return;
-			}
-
-			if(files[i].getName().matches("^[0-9]{8}.rcd$")) {
+			if(!files[i].isFile() &&files[i].getName().matches("^[0-9]{8}.rcd$")) {
 				//売上ファイルの条件に当てはまったものだけ、List(ArrayList) に追加します。
 				rcdFiles.add(files[i]);
 			}
@@ -81,7 +74,7 @@ public class CalculateSales {
 		//比較回数は売上ファイルの数よりも1回少ないため、
 		//繰り返し回数は売上ファイルのリストの数よりも1つ小さい数
 		Collections.sort(rcdFiles);
-		for(int i = 0; i < rcdFiles.size() -1; i++) {
+		for(int i = 0; i < rcdFiles.size() - 1; i++) {
 			//latter - former = 1になれば連番、.get(i)呼び出し順で後者は.get(i) + 1、File型だとエラーになるので.getNameでStringにした
 			int former = Integer.parseInt(rcdFiles.get(i).getName().substring(0, 8));
 			int latter = Integer.parseInt(rcdFiles.get(i + 1).getName().substring(0, 8));
