@@ -177,8 +177,6 @@ public class CalculateSales {
 					System.out.println(AMOUNT_OVER);
 					return;
 				}
-
-
 				//加算した売上金額をMapに追加します。
 				branchSales.put(branchCode, saleAmount);
 				commoditySales.put(commodityCode, commoditySaleAmount);
