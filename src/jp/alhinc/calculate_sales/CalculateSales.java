@@ -283,7 +283,7 @@ public class CalculateSales {
 	 * @param 支店コードと売上金額を保持するMap
 	 * @return 書き込み可否
 	 */
-	private static boolean writeFile(String path, String fileName, Map<String, String> branchNames, Map<String, Long> branchSales) {
+	private static boolean writeFile(String path, String fileName, Map<String, String> mapNames, Map<String, Long> mapSales) {
 		// ※ここに書き込み処理を作成してください。(処理内容3-1)
 		BufferedWriter bw = null;
 
@@ -293,13 +293,13 @@ public class CalculateSales {
 			FileWriter fw = new FileWriter(file);
 			bw = new BufferedWriter(fw);
 			//中身がなくなるまで1つずつ取り出す
-			for (String key : branchNames.keySet()) {
+			for (String key : mapNames.keySet()) {
 				//keyという変数には、Mapから取得したキーが代入されています。
 				//拡張for文で繰り返されているので、1つ目のキーが取得できたら、
 				//2つ目の取得...といったように、次々とkeyという変数に上書きされていきます。
 
 				//line = key(支店コード)、支店名、加算した売上金額
-				String line = key + "," + branchNames.get(key) + "," + branchSales.get(key);
+				String line = key + "," + mapNames.get(key) + "," + mapSales.get(key);
 
 				// .writeでファイルに書き込む、newLine()で改行
 				bw.write(line);
